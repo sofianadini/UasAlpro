@@ -3,3 +3,4 @@ Pengeluaran|Umum|sunscreen 1|110000|12 Jun 2026
 Pengeluaran|Umum|bensin|100000|12 Jun 2026
 Pengeluaran|Umum|matcha|18000|12 Jun 2026
 Tabungan|Umum|kaka|500000|12 Jun 2026
+Pengeluaran|Umum|makan siang|20000|12 Jun 2026
