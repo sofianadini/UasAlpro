@@ -1,0 +1,5 @@
+Pemasukan|Pemasukan|orang tua|1e+06|12 Jun 2026
+Pengeluaran|Umum|sunscreen 1|110000|12 Jun 2026
+Pengeluaran|Umum|bensin|100000|12 Jun 2026
+Pengeluaran|Umum|matcha|18000|12 Jun 2026
+Tabungan|Umum|kaka|500000|12 Jun 2026
