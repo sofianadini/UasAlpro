@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Daily Finance Manager</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+
+    <!-- MODAL OVERLAY -->
+    <div id="modalOverlay" class="modal-overlay hidden">
+      <div class="modal" id="modalBox">
+        <div class="modal-header">
+          <h3 id="modalTitle">Modal</h3>
+          <button class="modal-close" id="modalClose">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="logo-icon">💳</div>
+        <div>
+          <h2>Smart Daily</h2>
+          <p>Finance Manager</p>
+        </div>
+      </div>
+
+      <ul class="menu">
+        <li class="active" data-page="dashboard"><a href="#"><span>🏠</span> Dashboard</a></li>
+        <li data-page="pemasukan"><a href="#"><span>➕</span> Pemasukan</a></li>
+        <li data-page="pengeluaran"><a href="#"><span>➖</span> Pengeluaran</a></li>
+        <li data-page="transaksi"><a href="#"><span>📋</span> Transaksi</a></li>
+        <li data-page="target"><a href="#"><span>🎯</span> Target Tabungan</a></li>
+        <li data-page="statistik"><a href="#"><span>📈</span> Statistik</a></li>
+      </ul>
+
+      <div class="quote-card">
+        <h4>🌱</h4>
+        <p>Kelola keuanganmu dengan cerdas, capai masa depan yang bebas finansial!</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="avatar">👩🏻</div>
+        <div>
+          <h4>Hello, Sofia 👋</h4>
+          <p>Kelola keuangan hari ini!</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <!-- HEADER -->
+      <header class="top-header">
+        <div>
+          <h1>Halo, Sofia! 👋</h1>
+          <p id="tanggalHeader">Memuat tanggal...</p>
+        </div>
+        <div class="header-right">
+          <div id="serverStatus" class="server-status offline">⚡ Menghubungkan...</div>
+          <button class="notif-btn" title="Refresh Data" onclick="refreshSemua()">🔄</button>
+          <button class="menu-toggle" id="menuToggle">☰</button>
+        </div>
+      </header>
+
+      <!-- PAGE: DASHBOARD -->
+      <div id="page-dashboard" class="page active">
+
+        <section class="saldo-cards">
+          <div class="card saldo-kebutuhan">
+            <div class="card-header">
+              <span>💚</span>
+              <div>
+                <h3>Saldo Kebutuhan</h3>
+                <h2 id="saldoKebutuhan">Rp 0</h2>
+                <p id="pctKebutuhan">0% dari total</p>
+              </div>
+            </div>
+            <div class="progress"><div class="progress-bar green" id="barKebutuhan" style="width:0%"></div></div>
+          </div>
+
+          <div class="card saldo-tabungan">
+            <div class="card-header">
+              <span>🐷</span>
+              <div>
+                <h3>Saldo Tabungan</h3>
+                <h2 id="saldoTabungan">Rp 0</h2>
+                <p id="pctTabungan">0% dari total</p>
+              </div>
+            </div>
+            <div class="progress"><div class="progress-bar purple" id="barTabungan" style="width:0%"></div></div>
+          </div>
+
+          <div class="card total-saldo">
+            <div class="card-header">
+              <span>💙</span>
+              <div>
+                <h3>Total Saldo</h3>
+                <h2 id="totalSaldo">Rp 0</h2>
+                <p>100%</p>
+              </div>
+            </div>
+            <div class="progress"><div class="progress-bar blue" style="width:100%"></div></div>
+          </div>
+        </section>
+
+        <section class="action-buttons">
+          <button id="btnPemasukan" class="btn-pemasukan">➕ Tambah Pemasukan</button>
+          <button id="btnPengeluaran" class="btn-pengeluaran">➖ Tambah Pengeluaran</button>
+          <button id="btnTarget" class="btn-target">🎯 Atur Target Tabungan</button>
+          <button id="btnCari" class="btn-cari">🔍 Cari Transaksi</button>
+          <button id="btnReset" class="btn-reset">🗑️ Reset Data</button>
+          <button id="btnRefresh" class="btn-refresh" onclick="refreshSemua()">🔄 Refresh</button>
+        </section>
+
+        <section class="middle-section">
+          <div class="card target-card">
+            <h3>🎯 Progress Target Tabungan</h3>
+            <div class="target-info">
+              <p>Target: <strong id="targetAmt">Belum diatur</strong></p>
+              <p>Terkumpul: <strong id="tabunganAmt">Rp 0</strong></p>
+            </div>
+            <h1 id="targetPct">0%</h1>
+            <div class="progress target-progress">
+              <div class="progress-bar green" id="barTarget" style="width:0%"></div>
+            </div>
+            <p class="motivation" id="motivasiText">Atur target tabunganmu sekarang! 🎯</p>
+          </div>
+
+          <div class="card pie-card">
+            <div class="pie-header">
+              <h3>📊 Ringkasan Keuangan</h3>
+            </div>
+            <div class="pie-content">
+              <div class="pie-chart-wrap">
+                <canvas id="pieCanvas" width="160" height="160"></canvas>
+              </div>
+              <div class="pie-detail">
+                <p>🟢 Pemasukan <span id="totalPemasukan">Rp 0</span></p>
+                <p>🔴 Pengeluaran <span id="totalPengeluaran">Rp 0</span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card transaksi-card">
+          <div class="transaksi-header">
+            <h3>Transaksi Terbaru</h3>
+            <button onclick="switchPage('transaksi')">Lihat Semua</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>No</th><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th></tr>
+              </thead>
+              <tbody id="transaksiBodyDashboard"></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- PAGE: PEMASUKAN -->
+      <div id="page-pemasukan" class="page hidden">
+        <div class="card form-card">
+          <h2>➕ Tambah Pemasukan</h2>
+          <p class="form-sub">Catat sumber pemasukan kamu</p>
+          <div class="form-group">
+            <label>Sumber Pemasukan</label>
+            <input type="text" id="inSumber" placeholder="Contoh: Gaji Bulanan, Freelance..." />
+          </div>
+          <div class="form-group">
+            <label>Nominal (Rp)</label>
+            <input type="number" id="inNominal" placeholder="5000000" min="1" />
+          </div>
+          <div class="form-group">
+            <label>Metode Alokasi</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="tipeAlokasi" value="1" checked />
+                <span>
+                  <strong>Sistem 60/40</strong>
+                  <small>60% kebutuhan, 40% tabungan</small>
+                </span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="tipeAlokasi" value="2" />
+                <span>
+                  <strong>Langsung ke Tabungan</strong>
+                  <small>100% masuk tabungan</small>
+                </span>
+              </label>
+            </div>
+          </div>
+          <button class="btn-submit" onclick="submitPemasukan()">➕ Tambah Pemasukan</button>
+        </div>
+      </div>
+
+      <!-- PAGE: PENGELUARAN -->
+      <div id="page-pengeluaran" class="page hidden">
+        <div class="card form-card">
+          <h2>➖ Tambah Pengeluaran</h2>
+          <p class="form-sub">Catat pengeluaran kamu hari ini</p>
+          <div class="saldo-info-bar">
+            <div><span>Saldo Kebutuhan</span><strong id="infoSaldoKebutuhan">Rp 0</strong></div>
+            <div><span>Saldo Tabungan</span><strong id="infoSaldoTabungan">Rp 0</strong></div>
+          </div>
+          <div class="form-group">
+            <label>Keterangan</label>
+            <input type="text" id="inKeterangan" placeholder="Contoh: Makan siang, Transportasi..." />
+          </div>
+          <div class="form-group">
+            <label>Jumlah (Rp)</label>
+            <input type="number" id="inJumlah" placeholder="50000" min="1" />
+          </div>
+          <button class="btn-submit btn-pengeluaran-submit" onclick="submitPengeluaran()">➖ Catat Pengeluaran</button>
+        </div>
+      </div>
+
+      <!-- PAGE: TRANSAKSI -->
+      <div id="page-transaksi" class="page hidden">
+        <div class="card">
+          <div class="transaksi-header">
+            <h2>📋 Semua Transaksi</h2>
+            <div class="filter-wrap">
+              <input type="text" id="searchInput" placeholder="🔍 Cari transaksi..." oninput="filterTransaksi()" />
+              <select id="filterTipe" onchange="filterTransaksi()">
+                <option value="">Semua Jenis</option>
+                <option value="Pemasukan">Pemasukan</option>
+                <option value="Pengeluaran">Pengeluaran</option>
+                <option value="Tabungan">Tabungan</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>No</th><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th></tr>
+              </thead>
+              <tbody id="transaksiBodyFull"></tbody>
+            </table>
+          </div>
+          <p id="transaksiEmpty" class="empty-state hidden">Belum ada transaksi. Mulai catat pemasukanmu! 💪</p>
+        </div>
+      </div>
+
+      <!-- PAGE: TARGET -->
+      <div id="page-target" class="page hidden">
+        <div class="card form-card">
+          <h2>🎯 Atur Target Tabungan</h2>
+          <p class="form-sub">Tetapkan tujuan tabunganmu</p>
+          <div class="target-display">
+            <div class="target-circle">
+              <svg viewBox="0 0 120 120" width="160" height="160">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#ececec" stroke-width="12"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#2ecc71" stroke-width="12"
+                  stroke-dasharray="339.3" id="targetCircle" stroke-dashoffset="339.3"
+                  stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              </svg>
+              <div class="target-circle-text">
+                <span id="targetPctPage">0%</span>
+                <small>tercapai</small>
+              </div>
+            </div>
+            <div class="target-stats">
+              <div class="stat-item"><span>Target</span><strong id="statTarget">Belum diatur</strong></div>
+              <div class="stat-item"><span>Terkumpul</span><strong id="statTerkumpul">Rp 0</strong></div>
+              <div class="stat-item"><span>Sisa</span><strong id="statSisa">-</strong></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Target Tabungan Baru (Rp)</label>
+            <input type="number" id="inTarget" placeholder="10000000" min="1" />
+          </div>
+          <button class="btn-submit" onclick="submitTarget()">🎯 Simpan Target</button>
+        </div>
+      </div>
+
+      <!-- PAGE: STATISTIK -->
+      <div id="page-statistik" class="page hidden">
+        <div class="statistik-grid">
+          <div class="card stat-card green">
+            <div class="stat-icon">📥</div>
+            <div>
+              <p>Total Pemasukan</p>
+              <h2 id="statPemasukan">Rp 0</h2>
+              <small id="statCtrPemasukan">0 transaksi</small>
+            </div>
+          </div>
+          <div class="card stat-card red">
+            <div class="stat-icon">📤</div>
+            <div>
+              <p>Total Pengeluaran</p>
+              <h2 id="statPengeluaran">Rp 0</h2>
+              <small id="statCtrPengeluaran">0 transaksi</small>
+            </div>
+          </div>
+          <div class="card stat-card purple">
+            <div class="stat-icon">🐷</div>
+            <div>
+              <p>Transaksi Tabungan</p>
+              <h2 id="statCtrTabunganAmt">0</h2>
+              <small>kali menabung</small>
+            </div>
+          </div>
+          <div class="card stat-card blue">
+            <div class="stat-icon">💰</div>
+            <div>
+              <p>Saldo Bersih</p>
+              <h2 id="statBersih">Rp 0</h2>
+              <small>kebutuhan + tabungan</small>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <h3 style="margin-bottom:20px">📊 Distribusi Transaksi</h3>
+          <canvas id="barCanvas" height="80"></canvas>
+        </div>
+      </div>
+
+      <footer>© 2025 Smart Daily Finance Manager. All rights reserved.</footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
